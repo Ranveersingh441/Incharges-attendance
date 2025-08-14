@@ -111,6 +111,14 @@
             margin-right: 8px;
             vertical-align: middle;
         }
+        .success-message {
+            color: #27ae60;
+            margin-top: 10px;
+            font-weight: 600;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -156,7 +164,7 @@
         <label for="attendance">Attendance:</label>
         <select id="attendance" name="attendance" required>
             <option value="">Select Attendance</option>
-            <option value="Present">Present</option>
+            <!-- Removed 'Present' option as it's now assumed by default -->
             <option value="Absent">Absent</option>
             <option value="Half Day Morning">Half Day Morning</option>
             <option value="Half Day Evening">Half Day Evening</option>
@@ -203,7 +211,7 @@
                     <th>Present Days</th>
                     <th>Half Days</th>
                     <th>Absent Days</th>
-                    <th>Total Days</th>
+                    <th>Total Days (Assumed)</th>
                     <th>Attendance %</th>
                 </tr>
             </thead>
@@ -216,6 +224,7 @@
 
 <script>
     const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || [];
+    const DEFAULT_MONTH_DAYS = 30; // Define the default number of days in a month
 
     // Save records to localStorage whenever they change
     function saveRecords() {
@@ -248,12 +257,7 @@
         const successMessage = document.createElement('div');
         successMessage.className = 'success-message';
         successMessage.textContent = message;
-        successMessage.style.color = '#27ae60';
-        successMessage.style.marginTop = '10px';
-        successMessage.style.fontWeight = '600';
-        successMessage.style.padding = '10px';
-        successMessage.style.backgroundColor = '#e8f5e9';
-        successMessage.style.borderRadius = '4px';
+        // Styles are already defined in CSS for .success-message
         document.body.insertBefore(successMessage, document.getElementById('attendanceForm').nextSibling);
 
         setTimeout(() => {
@@ -310,40 +314,58 @@
                    (recordDate.getMonth() + 1) == monthNum;
         });
 
-        if (filteredRecords.length === 0) {
-            showSuccessMessage('No attendance records found for the selected month!');
+        // Get all unique incharges from all records (not just filtered)
+        // This ensures all incharges are listed even if they have no records in the selected month
+        const allIncharges = [...new Set(attendanceRecords.map(record => record.incharge))];
+
+        if (allIncharges.length === 0) {
+            showSuccessMessage('No incharges found in records!');
             monthlyTable.style.display = 'none';
             summaryDiv.style.display = 'none';
             return;
         }
 
-        // Calculate attendance for each incharge
+        // Calculate attendance for each incharge based on the new logic
         const attendanceStats = {};
-        filteredRecords.forEach(record => {
-            if (!attendanceStats[record.incharge]) {
-                attendanceStats[record.incharge] = {
-                    present: 0,
-                    halfDay: 0,
-                    absent: 0
-                };
-            }
 
-            if (record.attendance === 'Present') {
-                attendanceStats[record.incharge].present += 1;
-            } 
-            else if (record.attendance === 'Half Day Morning' || record.attendance === 'Half Day Evening') {
-                attendanceStats[record.incharge].halfDay += 0.5;
-            }
-            else if (record.attendance === 'Absent') {
-                attendanceStats[record.incharge].absent += 1;
+        allIncharges.forEach(incharge => {
+            attendanceStats[incharge] = {
+                present: DEFAULT_MONTH_DAYS, // Start with default 30 present days
+                halfDay: 0,
+                absent: 0,
+                totalPossibleDays: DEFAULT_MONTH_DAYS // Total days for calculation
+            };
+        });
+
+        filteredRecords.forEach(record => {
+            if (attendanceStats[record.incharge]) { // Ensure incharge exists in our stats object
+                if (record.attendance === 'Absent') {
+                    attendanceStats[record.incharge].absent += 1;
+                    attendanceStats[record.incharge].present -= 1; // Subtract from present
+                } 
+                else if (record.attendance === 'Half Day Morning' || record.attendance === 'Half Day Evening') {
+                    attendanceStats[record.incharge].halfDay += 0.5;
+                    attendanceStats[record.incharge].present -= 0.5; // Subtract from present
+                }
+                // 'Present' records do not change the count as we assume 30 days by default
             }
         });
 
+        // Ensure present days don't go below zero
+        for (const incharge in attendanceStats) {
+            if (attendanceStats[incharge].present < 0) {
+                attendanceStats[incharge].present = 0;
+            }
+        }
+
         // Populate monthly attendance table
+        let totalFilteredRecordsCount = 0; // To count actual records for summary
         for (const incharge in attendanceStats) {
             const stats = attendanceStats[incharge];
-            const totalDays = stats.present + stats.halfDay + stats.absent;
-            const attendancePercentage = ((stats.present + stats.halfDay) / totalDays * 100).toFixed(2);
+            
+            // Only add row if incharge has any relevant data or is in the allIncharges list
+            // This ensures all incharges are listed, even if they have 30 present days by default
+            const attendancePercentage = (stats.present / stats.totalPossibleDays * 100).toFixed(2);
             
             const newRow = monthlyBody.insertRow();
             
@@ -358,7 +380,7 @@
             cell2.textContent = stats.present;
             cell3.textContent = stats.halfDay;
             cell4.textContent = stats.absent;
-            cell5.textContent = totalDays;
+            cell5.textContent = stats.totalPossibleDays; // Display the assumed total days
             cell6.textContent = attendancePercentage + '%';
             
             // Color code based on attendance percentage
@@ -369,23 +391,25 @@
             } else {
                 cell6.style.color = '#e74c3c';
             }
+            totalFilteredRecordsCount += (stats.absent + stats.halfDay); // Count actual submitted exceptions
         }
 
         // Show summary
-        const totalIncharges = Object.keys(attendanceStats).length;
-        const averageAttendance = (
-            Object.values(attendanceStats).reduce((sum, stats) => {
-                const total = stats.present + stats.halfDay + stats.absent;
-                const percentage = (stats.present + stats.halfDay) / total * 100;
-                return sum + percentage;
-            }, 0) / totalIncharges
-        ).toFixed(2);
+        const totalInchargesWithRecords = Object.keys(attendanceStats).length;
+        
+        // Calculate average attendance based on the new logic
+        let sumOfPercentages = 0;
+        for (const incharge in attendanceStats) {
+            const stats = attendanceStats[incharge];
+            sumOfPercentages += (stats.present / stats.totalPossibleDays * 100);
+        }
+        const averageAttendance = (sumOfPercentages / totalInchargesWithRecords).toFixed(2);
 
         summaryText.innerHTML = `
             Selected Month: <strong>${new Date(year, monthNum - 1).toLocaleString('default', { month: 'long', year: 'numeric' })}</strong><br>
-            Total Records: <strong>${filteredRecords.length}</strong><br>
-            Unique Incharges: <strong>${totalIncharges}</strong><br>
-            Average Attendance: <strong>${averageAttendance}%</strong>
+            Total Exception Records (Absent/Half Day): <strong>${filteredRecords.length}</strong><br>
+            Unique Incharges in Report: <strong>${totalInchargesWithRecords}</strong><br>
+            Average Attendance (based on ${DEFAULT_MONTH_DAYS} days): <strong>${averageAttendance}%</strong>
         `;
         
         summaryDiv.style.display = 'block';
