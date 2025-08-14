@@ -5,7 +5,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Self Attendance System</title>
     <style>
-        /* Existing styles remain unchanged */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        form {
+            margin-bottom: 30px;
+            padding: 25px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin: 15px 0 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        select, input[type="date"], input[type="month"], button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        select:focus, input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #viewMonthlyAttendance {
+            background-color: #27ae60;
+        }
+        #viewMonthlyAttendance:hover {
+            background-color: #219653;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 14px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e9f7fe;
+        }
+        .monthly-attendance {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .summary-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .attendance-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .success-message {
+            color: #27ae60;
+            margin-top: 10px;
+            font-weight: 600;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -16,44 +129,54 @@
     </h1>
 
     <form id="attendanceForm">
-        <!-- Existing form elements remain unchanged -->
+        <label for="incharge">Select Incharge:</label>
+        <select id="incharge" name="incharge" required>
+            <option value="">Select Incharge</option>
+            <option value="BHAVESHBHAI JOLIYA">BHAVESHBHAI JOLIYA</option>
+            <option value="PRAVINBHAI SOLANKI">PRAVINBHAI SOLANKI</option>
+            <option value="THIRUPATHI VASANTH REDDY">THIRUPATHI VASANTH REDDY</option>
+            <option value="SUNIL VINAYAK LUTE">SUNIL VINAYAK LUTE</option>
+            <option value="Balaji AshokRao More">Balaji AshokRao More</option>
+            <option value="JOLIYA VIPUL RAMJIBHAI">JOLIYA VIPUL RAMJIBHAI</option>
+            <option value="LALJI TIWARI">LALJI TIWARI</option>
+            <option value="Ranveer Singh">Ranveer Singh</option>
+            <option value="BANOTH VAMSHI">BANOTH VAMSHI</option>
+            <option value="P Ananth Reddy">P Ananth Reddy</option>
+            <option value="AMAN KUMAR">AMAN KUMAR</option>
+            <option value="LOKESH YADAV">LOKESH YADAV</option>
+            <option value="SUNNY SINGH">SUNNY SINGH</option>
+            <option value="Anirudh Kumar">Anirudh Kumar</option>
+            <option value="Gauri Shankar Sah">Gauri Shankar Sah</option>
+            <option value="CHANDAN KUMAR THAKUR">CHANDAN KUMAR THAKUR</option>
+            <option value="BALRAM KUMAR">BALRAM KUMAR</option>
+            <option value="KOTAM HARISH KUMAR REDDY">KOTAM HARISH KUMAR REDDY</option>
+            <option value="M.VITTAL">M.VITTAL</option>
+            <option value="ROHIT KUMAR SINGH">ROHIT KUMAR SINGH</option>
+            <option value="PALLA SOMASANKAR">PALLA SOMASANKAR</option>
+            <option value="PATLOLLA VINAY REDDY">PATLOLLA VINAY REDDY</option>
+            <option value="DESH PANDE AKHIL">DESH PANDE AKHIL</option>
+            <option value="raunak sir">raunak sir</option>
+        </select>
+
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+
+        <label for="attendance">Attendance:</label>
+        <select id="attendance" name="attendance" required>
+            <option value="">Select Attendance</option>
+            <!-- Removed 'Present' option as it's now assumed by default -->
+            <option value="Absent">Absent</option>
+            <option value="Half Day Morning">Half Day Morning</option>
+            <option value="Half Day Evening">Half Day Evening</option>
+        </select>
+
+        <button type="submit">Submit Attendance</button>
     </form>
 
     <h2>
         <img src="https://placehold.co/40x40" alt="List icon, gray color" class="attendance-icon">
         Attendance Records
     </h2>
-    
-    <!-- New dropdown for selecting incharge to view records -->
-    <label for="viewIncharge">Select Incharge to View Records:</label>
-    <select id="viewIncharge" name="viewIncharge">
-        <option value="">All Incharges</option>
-        <option value="BHAVESHBHAI JOLIYA">BHAVESHBHAI JOLIYA</option>
-        <option value="PRAVINBHAI SOLANKI">PRAVINBHAI SOLANKI</option>
-        <option value="THIRUPATHI VASANTH REDDY">THIRUPATHI VASANTH REDDY</option>
-        <option value="SUNIL VINAYAK LUTE">SUNIL VINAYAK LUTE</option>
-        <option value="Balaji AshokRao More">Balaji AshokRao More</option>
-        <option value="JOLIYA VIPUL RAMJIBHAI">JOLIYA VIPUL RAMJIBHAI</option>
-        <option value="LALJI TIWARI">LALJI TIWARI</option>
-        <option value="Ranveer Singh">Ranveer Singh</option>
-        <option value="BANOTH VAMSHI">BANOTH VAMSHI</option>
-        <option value="P Ananth Reddy">P Ananth Reddy</option>
-        <option value="AMAN KUMAR">AMAN KUMAR</option>
-        <option value="LOKESH YADAV">LOKESH YADAV</option>
-        <option value="SUNNY SINGH">SUNNY SINGH</option>
-        <option value="Anirudh Kumar">Anirudh Kumar</option>
-        <option value="Gauri Shankar Sah">Gauri Shankar Sah</option>
-        <option value="CHANDAN KUMAR THAKUR">CHANDAN KUMAR THAKUR</option>
-        <option value="BALRAM KUMAR">BALRAM KUMAR</option>
-        <option value="KOTAM HARISH KUMAR REDDY">KOTAM HARISH KUMAR REDDY</option>
-        <option value="M.VITTAL">M.VITTAL</option>
-        <option value="ROHIT KUMAR SINGH">ROHIT KUMAR SINGH</option>
-        <option value="PALLA SOMASANKAR">PALLA SOMASANKAR</option>
-        <option value="PATLOLLA VINAY REDDY">PATLOLLA VINAY REDDY</option>
-        <option value="DESH PANDE AKHIL">DESH PANDE AKHIL</option>
-        <option value="raunak sir">raunak sir</option>
-    </select>
-
     <table id="attendanceTable">
         <thead>
             <tr>
@@ -68,7 +191,34 @@
     </table>
 
     <div class="monthly-attendance">
-        <!-- Existing monthly attendance section remains unchanged -->
+        <h2>
+            <img src="https://placehold.co/40x40" alt="Calendar with statistics icon, green color" class="attendance-icon">
+            Monthly Attendance Summary
+        </h2>
+        <label for="month">Select Month:</label>
+        <input type="month" id="month" name="month" required>
+        <button id="viewMonthlyAttendance">Generate Report</button>
+        
+        <div id="monthlySummary" class="summary-card" style="display:none;">
+            <h3>Monthly Summary</h3>
+            <p id="summaryText"></p>
+        </div>
+        
+        <table id="monthlyAttendanceTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Incharge</th>
+                    <th>Present Days</th>
+                    <th>Half Days</th>
+                    <th>Absent Days</th>
+                    <th>Total Days (Assumed)</th>
+                    <th>Attendance %</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Monthly attendance records will be added here -->
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -81,18 +231,14 @@
         localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
     }
 
-    // Render records based on selected incharge
+    // Render all records to the table
     function renderRecords() {
-        const selectedIncharge = document.getElementById('viewIncharge').value;
         const table = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0];
         table.innerHTML = '';
-
-        const filteredRecords = selectedIncharge ? 
-            attendanceRecords.filter(record => record.incharge === selectedIncharge) : 
-            attendanceRecords;
-
-        filteredRecords.forEach(record => {
+        
+        attendanceRecords.forEach(record => {
             const newRow = table.insertRow();
+            
             const cell1 = newRow.insertCell(0);
             const cell2 = newRow.insertCell(1);
             const cell3 = newRow.insertCell(2);
@@ -105,18 +251,169 @@
 
     // Show success message
     function showSuccessMessage(message) {
-        // Existing success message logic remains unchanged
+        const existingMessage = document.querySelector('.success-message');
+        if (existingMessage) existingMessage.remove();
+
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-message';
+        successMessage.textContent = message;
+        // Styles are already defined in CSS for .success-message
+        document.body.insertBefore(successMessage, document.getElementById('attendanceForm').nextSibling);
+
+        setTimeout(() => {
+            successMessage.remove();
+        }, 3000);
     }
 
     document.getElementById('attendanceForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        // Existing form submission logic remains unchanged
+
+        const incharge = document.getElementById('incharge').value;
+        const date = document.getElementById('date').value;
+        const attendance = document.getElementById('attendance').value;
+
+        // Check for duplicate entry
+        const isDuplicate = attendanceRecords.some(record => 
+            record.incharge === incharge && record.date === date
+        );
+
+        if (isDuplicate) {
+            showSuccessMessage('Attendance for this incharge on this date already exists!');
+            return;
+        }
+
+        // Add record
+        attendanceRecords.push({ incharge, date, attendance });
+        saveRecords();
+        renderRecords();
+        
+        showSuccessMessage('Attendance submitted successfully!');
+        document.getElementById('attendanceForm').reset();
     });
 
-    document.getElementById('viewIncharge').addEventListener('change', renderRecords);
-
     document.getElementById('viewMonthlyAttendance').addEventListener('click', function() {
-        // Existing monthly attendance logic remains unchanged
+        const month = document.getElementById('month').value;
+        const monthlyTable = document.getElementById('monthlyAttendanceTable');
+        const monthlyBody = monthlyTable.getElementsByTagName('tbody')[0];
+        const summaryDiv = document.getElementById('monthlySummary');
+        const summaryText = document.getElementById('summaryText');
+        
+        if (!month) {
+            showSuccessMessage('Please select a month first!');
+            return;
+        }
+
+        // Clear previous records
+        monthlyBody.innerHTML = '';
+        
+        // Filter records for the selected month
+        const [year, monthNum] = month.split('-');
+        const filteredRecords = attendanceRecords.filter(record => {
+            const recordDate = new Date(record.date);
+            return recordDate.getFullYear() == year && 
+                   (recordDate.getMonth() + 1) == monthNum;
+        });
+
+        // Get all unique incharges from all records (not just filtered)
+        // This ensures all incharges are listed even if they have no records in the selected month
+        const allIncharges = [...new Set(attendanceRecords.map(record => record.incharge))];
+
+        if (allIncharges.length === 0) {
+            showSuccessMessage('No incharges found in records!');
+            monthlyTable.style.display = 'none';
+            summaryDiv.style.display = 'none';
+            return;
+        }
+
+        // Calculate attendance for each incharge based on the new logic
+        const attendanceStats = {};
+
+        allIncharges.forEach(incharge => {
+            attendanceStats[incharge] = {
+                present: DEFAULT_MONTH_DAYS, // Start with default 30 present days
+                halfDay: 0,
+                absent: 0,
+                totalPossibleDays: DEFAULT_MONTH_DAYS // Total days for calculation
+            };
+        });
+
+        filteredRecords.forEach(record => {
+            if (attendanceStats[record.incharge]) { // Ensure incharge exists in our stats object
+                if (record.attendance === 'Absent') {
+                    attendanceStats[record.incharge].absent += 1;
+                    attendanceStats[record.incharge].present -= 1; // Subtract from present
+                } 
+                else if (record.attendance === 'Half Day Morning' || record.attendance === 'Half Day Evening') {
+                    attendanceStats[record.incharge].halfDay += 0.5;
+                    attendanceStats[record.incharge].present -= 0.5; // Subtract from present
+                }
+                // 'Present' records do not change the count as we assume 30 days by default
+            }
+        });
+
+        // Ensure present days don't go below zero
+        for (const incharge in attendanceStats) {
+            if (attendanceStats[incharge].present < 0) {
+                attendanceStats[incharge].present = 0;
+            }
+        }
+
+        // Populate monthly attendance table
+        let totalFilteredRecordsCount = 0; // To count actual records for summary
+        for (const incharge in attendanceStats) {
+            const stats = attendanceStats[incharge];
+            
+            // Only add row if incharge has any relevant data or is in the allIncharges list
+            // This ensures all incharges are listed, even if they have 30 present days by default
+            const attendancePercentage = (stats.present / stats.totalPossibleDays * 100).toFixed(2);
+            
+            const newRow = monthlyBody.insertRow();
+            
+            const cell1 = newRow.insertCell(0);
+            const cell2 = newRow.insertCell(1);
+            const cell3 = newRow.insertCell(2);
+            const cell4 = newRow.insertCell(3);
+            const cell5 = newRow.insertCell(4);
+            const cell6 = newRow.insertCell(5);
+
+            cell1.textContent = incharge;
+            cell2.textContent = stats.present;
+            cell3.textContent = stats.halfDay;
+            cell4.textContent = stats.absent;
+            cell5.textContent = stats.totalPossibleDays; // Display the assumed total days
+            cell6.textContent = attendancePercentage + '%';
+            
+            // Color code based on attendance percentage
+            if (attendancePercentage >= 90) {
+                cell6.style.color = '#27ae60';
+            } else if (attendancePercentage >= 75) {
+                cell6.style.color = '#f39c12';
+            } else {
+                cell6.style.color = '#e74c3c';
+            }
+            totalFilteredRecordsCount += (stats.absent + stats.halfDay); // Count actual submitted exceptions
+        }
+
+        // Show summary
+        const totalInchargesWithRecords = Object.keys(attendanceStats).length;
+        
+        // Calculate average attendance based on the new logic
+        let sumOfPercentages = 0;
+        for (const incharge in attendanceStats) {
+            const stats = attendanceStats[incharge];
+            sumOfPercentages += (stats.present / stats.totalPossibleDays * 100);
+        }
+        const averageAttendance = (sumOfPercentages / totalInchargesWithRecords).toFixed(2);
+
+        summaryText.innerHTML = `
+            Selected Month: <strong>${new Date(year, monthNum - 1).toLocaleString('default', { month: 'long', year: 'numeric' })}</strong><br>
+            Total Exception Records (Absent/Half Day): <strong>${filteredRecords.length}</strong><br>
+            Unique Incharges in Report: <strong>${totalInchargesWithRecords}</strong><br>
+            Average Attendance (based on ${DEFAULT_MONTH_DAYS} days): <strong>${averageAttendance}%</strong>
+        `;
+        
+        summaryDiv.style.display = 'block';
+        monthlyTable.style.display = 'table';
     });
 
     // Render any existing records on page load
