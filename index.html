@@ -3,125 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Self Attendance System - Monthly Records</title>
+    <title>Self Attendance System</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px;
-            background-color: #f5f7fa;
-            color: #333;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 14px;
-            text-align: left;
-        }
-        th {
-            background-color: #3498db;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        tr:hover {
-            background-color: #e9f7fe;
-        }
-        .summary {
-            margin-top: 20px;
-            font-weight: bold;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f0f8ff; color: #333; }
+        .container { max-width: 600px; margin: auto; padding: 20px; background: linear-gradient(135deg, #ffffff, #e6f7ff); border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>Monthly Attendance Records</h1>
-    <table id="attendanceTable">
-        <thead>
-            <tr>
-                <th>Incharge</th>
-                <th>Present Days</th>
-                <th>Absent Days</th>
-                <th>Total Days</th>
-                <th>Attendance %</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Attendance records will be added here -->
-        </tbody>
-    </table>
-    <div class="summary" id="summary"></div>
-    <button onclick="window.location.href='index.html'">Back to Submit Attendance</button>
-</div>
+    <div class="container">
+        <h1>Self Attendance System</h1>
+        <button onclick="showPage('submitPage')" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; transition: background-color 0.3s;">Submit Attendance</button>
+        <button onclick="showPage('reportPage')" style="background-color: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">Monthly Report</button>
 
-<script>
-    const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || [];
-    const DEFAULT_MONTH_DAYS = 30; // Assuming 30 days in a month
+        <div id="submitPage" class="page">
+            <h2>Submit Attendance</h2>
+            <label for="name">Name:</label>
+            <select id="name">
+                <option value="BHAVESHBHAI JOLIYA">BHAVESHBHAI JOLIYA</option>
+                <option value="PRAVINBHAI SOLANKI">PRAVINBHAI SOLANKI</option>
+                <option value="THIRUPATHI VASANTH REDDY">THIRUPATHI VASANTH REDDY</option>
+                <option value="SUNIL VINAYAK LUTE">SUNIL VINAYAK LUTE</option>
+                <option value="Balaji AshokRao More">Balaji AshokRao More</option>
+                <option value="JOLIYA VIPUL RAMJIBHAI">JOLIYA VIPUL RAMJIBHAI</option>
+                <option value="LALJI TIWARI">LALJI TIWARI</option>
+                <option value="Ranveer Singh">Ranveer Singh</option>
+                <option value="BANOTH VAMSHI">BANOTH VAMSHI</option>
+                <option value="P Ananth Reddy">P Ananth Reddy</option>
+                <option value="AMAN KUMAR">AMAN KUMAR</option>
+                <option value="LOKESH YADAV">LOKESH YADAV</option>
+                <option value="SUNNY SINGH">SUNNY SINGH</option>
+                <option value="Anirudh Kumar">Anirudh Kumar</option>
+                <option value="Gauri Shankar Sah">Gauri Shankar Sah</option>
+                <option value="CHANDAN KUMAR THAKUR">CHANDAN KUMAR THAKUR</option>
+                <option value="BALRAM KUMAR">BALRAM KUMAR</option>
+                <option value="KOTAM HARISH KUMAR REDDY">KOTAM HARISH KUMAR REDDY</option>
+                <option value="M.VITTAL">M.VITTAL</option>
+                <option value="ROHIT KUMAR SINGH">ROHIT KUMAR SINGH</option>
+                <option value="PALLA SOMASANKAR">PALLA SOMASANKAR</option>
+                <option value="PATLOLLA VINAY REDDY">PATLOLLA VINAY REDDY</option>
+                <option value="DESH PANDE AKHIL">DESH PANDE AKHIL</option>
+                <option value="raunak sir">raunak sir</option>
+            </select>
+            <br><br>
+            <label for="date" style="color: #2196F3; font-weight: bold;">Date:</label>
+            <input type="date" id="date" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+            <br><br>
+            <label for="attendance" style="color: #2196F3; font-weight: bold;">Attendance:</label>
+            <select id="attendance" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd; background-color: #f9f9f9;">
+                <option value="absent">Absent</option>
+                <option value="half_day_morning">Half Day (Morning)</option>
+                <option value="half_day_evening">Half Day (Evening)</option>
+            </select>
+            <br><br>
+            <button onclick="submitAttendance()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; transition: background-color 0.3s;">Submit</button>
+        </div>
 
-    // Function to calculate and render monthly attendance records
-    function renderRecords() {
-        const tableBody = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0];
-        tableBody.innerHTML = '';
+        <div id="reportPage" class="page hidden">
+            <h2>Monthly Report</h2>
+            <div id="reportContent"></div>
+        </div>
+    </div>
 
-        const attendanceStats = {};
+    <script>
+        const attendanceData = [];
 
-        // Calculate attendance statistics
-        attendanceRecords.forEach(record => {
-            if (!attendanceStats[record.incharge]) {
-                attendanceStats[record.incharge] = {
-                    present: DEFAULT_MONTH_DAYS, // Start with 30 present days
-                    absent: 0,
-                };
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(page).classList.remove('hidden');
+            if (page === 'reportPage') {
+                generateReport();
             }
-            if (record.attendance === 'Absent') {
-                attendanceStats[record.incharge].absent += 1;
-                attendanceStats[record.incharge].present -= 1; // Subtract from present
-            }
-        });
-
-        // Populate the table with attendance statistics
-        for (const incharge in attendanceStats) {
-            const stats = attendanceStats[incharge];
-            const attendancePercentage = ((stats.present / DEFAULT_MONTH_DAYS) * 100).toFixed(2);
-
-            const newRow = tableBody.insertRow();
-            newRow.insertCell(0).textContent = incharge;
-            newRow.insertCell(1).textContent = stats.present;
-            newRow.insertCell(2).textContent = stats.absent;
-            newRow.insertCell(3).textContent = DEFAULT_MONTH_DAYS; // Total days
-            newRow.insertCell(4).textContent = attendancePercentage + '%';
         }
 
-        // Show summary
-        const totalIncharges = Object.keys(attendanceStats).length;
-        const totalAbsents = Object.values(attendanceStats).reduce((sum, stats) => sum + stats.absent, 0);
-        const summaryText = `Total Incharges: ${totalIncharges}, Total Absent Days: ${totalAbsents}`;
-        document.getElementById('summary').textContent = summaryText;
-    }
+        function submitAttendance() {
+            const name = document.getElementById('name').value;
+            const date = document.getElementById('date').value;
+            const attendance = document.getElementById('attendance').value;
 
-    // Render any existing records on page load
-    renderRecords();
-</script>
+            if (name && date && attendance) {
+                attendanceData.push({ name, date, attendance });
+                alert('Attendance submitted successfully!');
+                document.getElementById('date').value = '';
+                document.getElementById('attendance').value = 'absent';
+            } else {
+                alert('Please fill all fields.');
+            }
+        }
+
+        function generateReport() {
+            const reportContent = attendanceData.reduce((acc, record) => {
+                const { name, attendance } = record;
+                acc[name] = acc[name] || { absent: 0, halfDay: 0 };
+                if (attendance === 'absent') {
+                    acc[name].absent += 1;
+                } else {
+                    acc[name].halfDay += 0.5;
+                }
+                return acc;
+            }, {});
+
+            let reportHTML = '<table style="width:100%; border-collapse: collapse; margin-top:20px;"><tr style="background-color: #4CAF50; color:white;"><th style="padding:12px; text-align:left;">Name</th><th style="padding:12px; text-align:left;">Absent</th><th style="padding:12px; text-align:left;">Half Day</th></tr>';
+            for (const [name, data] of Object.entries(reportContent)) {
+                reportHTML += `<tr style="border-bottom:1px solid #ddd;"><td style="padding:12px;">${name}</td><td style="padding:12px; color:${data.absent > 0 ? '#f44336' : '#4CAF50'}">${data.absent}</td><td style="padding:12px; color:${data.halfDay > 0 ? '#FF9800' : '#4CAF50'}">${data.halfDay}</td></tr>`;
+            }
+            reportHTML += '</table>';
+            document.getElementById('reportContent').innerHTML = reportHTML;
+        }
+    </script>
 </body>
 </html>
