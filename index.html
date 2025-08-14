@@ -3,18 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Self Attendance System</title>
+    <title>Incharge Self Attendance System</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f0f8ff; color: #333; }
         .container { max-width: 600px; margin: auto; padding: 20px; background: linear-gradient(135deg, #ffffff, #e6f7ff); border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .hidden { display: none; }
+        button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; transition: background-color 0.3s; }
+        button:hover { background-color: #45a049; }
+        select, input { padding: 8px; border-radius: 5px; border: 1px solid #ddd; width: 100%; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .absent { color: #f44336; }
+        .half-day { color: #FF9800; }
+        .present { color: #4CAF50; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Self Attendance System</h1>
-        <button onclick="showPage('submitPage')" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; transition: background-color 0.3s;">Submit Attendance</button>
-        <button onclick="showPage('reportPage')" style="background-color: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">Monthly Report</button>
+        <h1>Incharge Self Attendance System</h1>
+        <button onclick="showPage('submitPage')">Submit Attendance</button>
+        <button onclick="showPage('reportPage')">Monthly Report</button>
 
         <div id="submitPage" class="page">
             <h2>Submit Attendance</h2>
@@ -46,21 +56,36 @@
                 <option value="raunak sir">raunak sir</option>
             </select>
             <br><br>
-            <label for="date" style="color: #2196F3; font-weight: bold;">Date:</label>
-            <input type="date" id="date" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+            <label for="date">Date:</label>
+            <input type="date" id="date">
             <br><br>
-            <label for="attendance" style="color: #2196F3; font-weight: bold;">Attendance:</label>
-            <select id="attendance" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd; background-color: #f9f9f9;">
+            <label for="attendance">Attendance:</label>
+            <select id="attendance">
                 <option value="absent">Absent</option>
                 <option value="half_day_morning">Half Day (Morning)</option>
                 <option value="half_day_evening">Half Day (Evening)</option>
             </select>
             <br><br>
-            <button onclick="submitAttendance()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; transition: background-color 0.3s;">Submit</button>
+            <button onclick="submitAttendance()">Submit</button>
         </div>
 
         <div id="reportPage" class="page hidden">
             <h2>Monthly Report</h2>
+            <label for="month">Select Month:</label>
+            <select id="month" onchange="generateReport()">
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+            </select>
             <div id="reportContent"></div>
         </div>
     </div>
@@ -92,23 +117,80 @@
         }
 
         function generateReport() {
-            const reportContent = attendanceData.reduce((acc, record) => {
-                const { name, attendance } = record;
-                acc[name] = acc[name] || { absent: 0, halfDay: 0 };
-                if (attendance === 'absent') {
-                    acc[name].absent += 1;
-                } else {
-                    acc[name].halfDay += 0.5;
+            const selectedMonth = document.getElementById('month').value;
+            const selectedYear = new Date().getFullYear(); // Get current year
+            const workingDays = getWorkingDaysInMonth(selectedMonth, selectedYear);
+            
+            // First initialize all names with full present count
+            const reportContent = {};
+            Array.from(document.getElementById('name').options).forEach(option => {
+                reportContent[option.value] = { 
+                    present: workingDays, 
+                    absent: 0, 
+                    halfDay: 0 
+                };
+            });
+            
+            // Then apply any recorded attendance data
+            attendanceData.forEach(record => {
+                const { name, date, attendance } = record;
+                const month = new Date(date).toLocaleString('default', { month: 'long' });
+                if (month === selectedMonth && reportContent[name]) {
+                    if (attendance === 'absent') {
+                        reportContent[name].absent += 1;
+                        reportContent[name].present -= 1;
+                    } else if (attendance.includes('half_day')) {
+                        reportContent[name].halfDay += 0.5;
+                        reportContent[name].present -= 0.5;
+                    }
                 }
-                return acc;
-            }, {});
+            });
 
-            let reportHTML = '<table style="width:100%; border-collapse: collapse; margin-top:20px;"><tr style="background-color: #4CAF50; color:white;"><th style="padding:12px; text-align:left;">Name</th><th style="padding:12px; text-align:left;">Absent</th><th style="padding:12px; text-align:left;">Half Day</th></tr>';
+            let reportHTML = '<table><tr><th>Name</th><th>Present</th><th>Absent</th><th>Half Day</th></tr>';
             for (const [name, data] of Object.entries(reportContent)) {
-                reportHTML += `<tr style="border-bottom:1px solid #ddd;"><td style="padding:12px;">${name}</td><td style="padding:12px; color:${data.absent > 0 ? '#f44336' : '#4CAF50'}">${data.absent}</td><td style="padding:12px; color:${data.halfDay > 0 ? '#FF9800' : '#4CAF50'}">${data.halfDay}</td></tr>`;
+                reportHTML += `<tr><td>${name}</td><td class="present">${data.present}</td>
+                <td class="absent" onclick="showAbsentDates('${name}', '${selectedMonth}')">${data.absent}</td>
+                <td class="half-day">${data.halfDay}</td></tr>`;
             }
             reportHTML += '</table>';
+
+            // Add absent dates listing
+            reportHTML += '<h3>Absent Details</h3><table><tr><th>Date</th><th>Absentees</th></tr>';
+            const absentByDate = {};
+            attendanceData.forEach(record => {
+                const month = new Date(record.date).toLocaleString('default', { month: 'long' });
+                if (month === selectedMonth && record.attendance === 'absent') {
+                    if (!absentByDate[record.date]) {
+                        absentByDate[record.date] = [];
+                    }
+                    absentByDate[record.date].push(record.name);
+                }
+            });
+            Object.entries(absentByDate).forEach(([date, names]) => {
+                reportHTML += `<tr><td>${date}</td><td>${names.join(', ')}</td></tr>`;
+            });
+            reportHTML += '</table>';
+
             document.getElementById('reportContent').innerHTML = reportHTML;
+        }
+
+        function getWorkingDaysInMonth(monthName) {
+            // Default working days for a month (can be adjusted as needed)
+            return 22;
+        }
+
+        function showAbsentDates(name, month) {
+            const dates = attendanceData
+                .filter(r => r.name === name && 
+                       r.attendance === 'absent' && 
+                       new Date(r.date).toLocaleString('default', { month: 'long' }) === month)
+                .map(r => r.date);
+            
+            if (dates.length) {
+                alert(`${name} was absent on:\n${dates.join('\n')}`);
+            } else {
+                alert(`${name} has no recorded absences for ${month}`);
+            }
         }
     </script>
 </body>
