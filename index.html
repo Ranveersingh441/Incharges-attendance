@@ -1,209 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Self Attendance System</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f9f9f9;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        form {
-            margin-bottom: 20px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-        select, input[type="date"], button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .monthly-attendance {
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-
-<h1>Self Attendance System</h1>
-
-<form id="attendanceForm">
-    <label for="incharge">Select Incharge:</label>
-    <select id="incharge" name="incharge" required>
-        <option value="">Select Incharge</option>
-        <option value="BHAVESHBHAI JOLIYA">BHAVESHBHAI JOLIYA</option>
-        <option value="PRAVINBHAI SOLANKI">PRAVINBHAI SOLANKI</option>
-        <option value="THIRUPATHI VASANTH REDDY">THIRUPATHI VASANTH REDDY</option>
-        <option value="SUNIL VINAYAK LUTE">SUNIL VINAYAK LUTE</option>
-        <option value="Balaji AshokRao More">Balaji AshokRao More</option>
-        <option value="JOLIYA VIPUL RAMJIBHAI">JOLIYA VIPUL RAMJIBHAI</option>
-        <option value="LALJI TIWARI">LALJI TIWARI</option>
-        <option value="Ranveer Singh">Ranveer Singh</option>
-        <option value="BANOTH VAMSHI">BANOTH VAMSHI</option>
-        <option value="P Ananth Reddy">P Ananth Reddy</option>
-        <option value="AMAN KUMAR">AMAN KUMAR</option>
-        <option value="LOKESH YADAV">LOKESH YADAV</option>
-        <option value="SUNNY SINGH">SUNNY SINGH</option>
-        <option value="Anirudh Kumar">Anirudh Kumar</option>
-        <option value="Gauri Shankar Sah">Gauri Shankar Sah</option>
-        <option value="CHANDAN KUMAR THAKUR">CHANDAN KUMAR THAKUR</option>
-        <option value="BALRAM KUMAR">BALRAM KUMAR</option>
-        <option value="KOTAM HARISH KUMAR REDDY">KOTAM HARISH KUMAR REDDY</option>
-        <option value="M.VITTAL">M.VITTAL</option>
-        <option value="ROHIT KUMAR SINGH">ROHIT KUMAR SINGH</option>
-        <option value="PALLA SOMASANKAR">PALLA SOMASANKAR</option>
-        <option value="PATLOLLA VINAY REDDY">PATLOLLA VINAY REDDY</option>
-        <option value="DESH PANDE AKHIL">DESH PANDE AKHIL</option>
-        <option value="raunak sir">raunak sir</option>
-        
-    </select>
-
-    <label for="date">Date:</label>
-    <input type="date" id="date" name="date" required>
-
-    <label for="attendance">Attendance:</label>
-    <select id="attendance" name="attendance" required>
-        <option value="">Select Attendance</option>
-        <option value="Present">Present</option>
-        <option value="Absent">Absent</option>
-    </select>
-
-    <button type="submit">Submit Attendance</button>
-</form>
-
-<h2>Attendance Records</h2>
-<table id="attendanceTable">
-    <thead>
-        <tr>
-            <th>Incharge</th>
-            <th>Date</th>
-            <th>Attendance</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Attendance records will be added here -->
-    </tbody>
-</table>
-
-<div class="monthly-attendance">
-    <h2>View Monthly Attendance</h2>
-    <label for="month">Select Month:</label>
-    <input type="month" id="month" name="month" required>
-    <button id="viewMonthlyAttendance">View Attendance</button>
-    <table id="monthlyAttendanceTable" style="display:none;">
-        <thead>
-            <tr>
-                <th>Incharge</th>
-                <th>Attendance</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Monthly attendance records will be added here -->
-        </tbody>
-    </table>
-</div>
-
-<script>
-    const attendanceRecords = [];
-
-    document.getElementById('attendanceForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        const incharge = document.getElementById('incharge').value;
-        const date = document.getElementById('date').value;
-        const attendance = document.getElementById('attendance').value;
-
-        const table = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0];
-        const newRow = table.insertRow();
-
-        const cell1 = newRow.insertCell(0);
-        const cell2 = newRow.insertCell(1);
-        const cell3 = newRow.insertCell(2);
-
-        cell1.textContent = incharge;
-        cell2.textContent = date;
-        cell3.textContent = attendance;
-
-        // Store attendance record
-        attendanceRecords.push({ incharge, date, attendance });
-
-        // Reset the form
-        document.getElementById('attendanceForm').reset();
-    });
-
-    document.getElementById('viewMonthlyAttendance').addEventListener('click', function() {
-        const month = document.getElementById('month').value;
-        const monthlyTable = document.getElementById('monthlyAttendanceTable');
-        const monthlyBody = monthlyTable.getElementsByTagName('tbody')[0];
-        
-        // Clear previous records
-        monthlyBody.innerHTML = '';
-
-        // Filter records for the selected month
-        const filteredRecords = attendanceRecords.filter(record => {
-            const recordDate = new Date(record.date);
-            return recordDate.getFullYear() + '-' + String(recordDate.getMonth() + 1).padStart(2, '0') === month;
-        });
-
-        // Populate monthly attendance table
-        const attendanceCount = {};
-        filteredRecords.forEach(record => {
-            if (!attendanceCount[record.incharge]) {
-                attendanceCount[record.incharge] = { Present: 0, Absent: 0 };
+                cell6.style.color = '#f39c12';
+            } else {
+                cell6.style.color = '#e74c3c';
             }
-            attendanceCount[record.incharge][record.attendance]++;
-        });
-
-        for (const incharge in attendanceCount) {
-            const newRow = monthlyBody.insertRow();
-            const cell1 = newRow.insertCell(0);
-            const cell2 = newRow.insertCell(1);
-            cell1.textContent = incharge;
-            cell2.textContent = `Present: ${attendanceCount[incharge].Present}, Absent: ${attendanceCount[incharge].Absent}`;
         }
-
+        // Show summary
+        const totalIncharges = Object.keys(attendanceStats).length;
+        const averageAttendance = (
+            Object.values(attendanceStats).reduce((sum, stats) => {
+                const total = stats.present + stats.halfDay + stats.absent;
+                const percentage = (stats.present + stats.halfDay) / total * 100;
+                return sum + percentage;
+            }, 0) / totalIncharges
+        ).toFixed(2);
+        summaryText.innerHTML = `
+            Selected Month: <strong>${new Date(year, monthNum - 1).toLocaleString('default', { month: 'long', year: 'numeric' })}</strong><br>
+            Total Records: <strong>${filteredRecords.length}</strong><br>
+            Unique Incharges: <strong>${totalIncharges}</strong><br>
+            Average Attendance: <strong>${averageAttendance}%</strong>
+        `;
+        
+        summaryDiv.style.display = 'block';
         monthlyTable.style.display = 'table';
     });
+    // Render any existing records on page load
+    renderRecords();
 </script>
-
 </body>
 </html>
